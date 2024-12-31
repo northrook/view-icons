@@ -9,7 +9,7 @@ use Core\View\Template\View;
 use Override;
 use Support\Normalize;
 
-final class Icon extends View
+final class IconView extends View
 {
     public readonly Attributes $attributes;
 
