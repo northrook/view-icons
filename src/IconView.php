@@ -1,12 +1,10 @@
 <?php
 
-declare( strict_types = 1 );
+declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\View\Html\Attributes;
-use Core\View\Template\View;
-use Override;
+use Core\View\{Template\View, Html\Attributes};
 use Support\Normalize;
 
 final class IconView extends View
@@ -16,19 +14,18 @@ final class IconView extends View
     public readonly bool $isValid;
 
     /**
-     * @param string                                                               $svg
-     * @param array<string, null|array<array-key, string>|bool|string>|Attributes  $attributes
+     * @param string                                                              $svg
+     * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
      */
     public function __construct(
-            private string     $svg,
-            array | Attributes $attributes = [],
-    )
-    {
+        private string   $svg,
+        array|Attributes $attributes = [],
+    ) {
         $this->attributes = Attributes::from( $attributes );
 
         $this->svg = Normalize::whitespace( $this->svg );
 
-        $this->isValid = !empty( $this->svg );
+        $this->isValid = $this->validate();
 
         if ( $this->isValid ) {
             $this->attributes->class->add( 'icon', true );
@@ -36,15 +33,24 @@ final class IconView extends View
     }
 
     /**
+     * Returns a valid `<svg..>` HTML element if {@see self::$isValid}, else empty string.
      *
-     * @return string valid `svg` element, or empty on error
+     * @return string
      */
-    #[Override]
     public function __toString()
     {
-        if ( !$this->isValid ) {
+        if ( ! $this->isValid ) {
             return '';
         }
         return "<svg{$this->attributes}>{$this->svg}</svg>";
+    }
+
+    private function validate() : bool
+    {
+        // Check viewbox
+        // ensure height/width set based on viewbox if not provided
+        // ensure contains valid inner HTML, path, curve, etc
+        // ensure no illegal internal tags; JavaScript etc
+        return true;
     }
 }

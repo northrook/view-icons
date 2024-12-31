@@ -4,11 +4,17 @@ namespace Core\View\Interface;
 
 use Core\View\Html\Attributes;
 use Core\View\IconView;
-use Symfony\Contracts\Cache\CacheInterface;
 
 interface IconProviderInterface
 {
     public function has( string $icon ) : bool;
 
-    public function get( string $icon, array | Attributes $attributes = [], ?string $fallback = null ) : IconView;
+    /**
+     * @param string                                                              $icon
+     * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
+     * @param null|string                                                         $fallback
+     *
+     * @return null|IconView
+     */
+    public function get( string $icon, array|Attributes $attributes = [], ?string $fallback = null ) : ?IconView;
 }
