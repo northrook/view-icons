@@ -1,0 +1,28 @@
+{
+  "name": "northrook/view-icons",
+  "type": "library",
+  "description": "A PHP package for generating and managing SVG icons.",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Core\\View\\": "src"
+    }
+  },
+  "authors": [
+    {
+      "name": "Martin",
+      "email": "mn@northrook.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.3",
+    "northrook/view": "dev-main",
+    "symfony/http-client": "@stable"
+  },
+  "require-dev": {
+    "northrook/dev-env": "dev-main",
+    "latte/latte": "^3.0"
+  }
+}
