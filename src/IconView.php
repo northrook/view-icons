@@ -7,6 +7,11 @@ namespace Core\View;
 use Core\View\{Template\View, Html\Attributes};
 use Support\Normalize;
 
+/**
+ * @internal
+ *
+ * @author Martin Nielsen <mn@northrook.com>
+ */
 final class IconView extends View
 {
     public readonly Attributes $attributes;
@@ -17,10 +22,8 @@ final class IconView extends View
      * @param string                                                              $svg
      * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
      */
-    public function __construct(
-        private string   $svg,
-        array|Attributes $attributes = [],
-    ) {
+    public function __construct( private string $svg, array|Attributes $attributes = [] )
+    {
         $this->attributes = Attributes::from( $attributes );
 
         $this->svg = Normalize::whitespace( $this->svg );

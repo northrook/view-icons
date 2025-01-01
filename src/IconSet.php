@@ -180,7 +180,7 @@ final class IconSet implements IconProviderInterface
      *
      * @return bool
      */
-    final public function has( string $icon, bool $includeDefaults = true ) : bool
+    public function has( string $icon, bool $includeDefaults = true ) : bool
     {
         $icon = \strstr( $icon, '.', true ) ?: $icon;
         return $includeDefaults
@@ -196,7 +196,7 @@ final class IconSet implements IconProviderInterface
      *
      * @return null|IconView
      */
-    final public function get(
+    public function get(
         string           $icon,
         array|Attributes $attributes = [],
         ?string          $fallback = null,
