@@ -8,7 +8,7 @@ use Core\View\Html\Attributes;
 use Core\View\Interface\IconProviderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use function String\{cacheKey};
+use function String\cacheKey;
 use const Cache\AUTO;
 use Throwable;
 
