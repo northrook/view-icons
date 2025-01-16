@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\View\{Template\View, Html\Attributes};
-use Support\Normalize;
+use Core\View\{Html\Attributes, Template\ViewElement};
 
 /**
  * @internal
  *
  * @author Martin Nielsen <mn@northrook.com>
  */
-final class IconView extends View
+final class IconView extends ViewElement
 {
-    public readonly Attributes $attributes;
-
     public readonly bool $isValid;
 
     /**
@@ -24,32 +21,20 @@ final class IconView extends View
      */
     public function __construct( private string $svg, array|Attributes $attributes = [] )
     {
-        $this->attributes = Attributes::from( $attributes );
-
-        $this->svg = Normalize::whitespace( $this->svg );
+        parent::__construct( 'svg', $attributes );
 
         $this->isValid = $this->validate();
 
         if ( $this->isValid ) {
             $this->attributes->class->add( 'icon', true );
+            $this->content( $this->svg );
         }
-    }
-
-    /**
-     * Returns a valid `<svg..>` HTML element if {@see self::$isValid}, else empty string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        if ( ! $this->isValid ) {
-            return '';
-        }
-        return "<svg{$this->attributes}>{$this->svg}</svg>";
     }
 
     private function validate() : bool
     {
+        // Normalize HTML whitespace
+        $this->svg = (string) \preg_replace( '#\s+#', ' ', \trim( $this->svg ) );
         // Check viewbox
         // ensure height/width set based on viewbox if not provided
         // ensure contains valid inner HTML, path, curve, etc
