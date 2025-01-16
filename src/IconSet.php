@@ -260,7 +260,7 @@ final class IconSet implements IconProviderInterface
 
         $attributes
             ->add( $this->defaultAttributes )
-            ->add( $vector['attributes'] )
+            ->add( $vector['attributes'] ?? [] )
             ->class->add( $icon, true );
 
         $svg = \trim( \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
