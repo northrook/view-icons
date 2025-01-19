@@ -276,6 +276,6 @@ final class IconSet implements IconProviderInterface
      */
     private function getIconData( string $icon, ?string $fallback ) : array
     {
-        return $this->icons[$icon] ?? $this->icons[$fallback];
+        return $this->icons[$icon] ?? $this->icons[$fallback] ?? $this::DEFAULT[$icon];
     }
 }
