@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\View\{Html\Attributes, Template\ViewElement};
+use Core\View\Html\Attributes;
+use Core\View\Template\ViewElement;
 
 /**
  * @internal

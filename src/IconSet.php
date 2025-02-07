@@ -6,8 +6,8 @@ namespace Core\View;
 
 use Core\View\Html\Attributes;
 use Core\View\Interface\IconProviderInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Psr\Log\LoggerInterface;
 use function String\cacheKey;
 use const Cache\AUTO;
 use Throwable;
