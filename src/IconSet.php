@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\View\Html\Attributes;
-use Core\View\Interface\IconProviderInterface;
-use Symfony\Contracts\Cache\CacheInterface;
+use Core\Interface\{IconInterface, IconProviderInterface};
+use Core\View\Element\Attributes;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use function String\cacheKey;
 use const Cache\AUTO;
 use Throwable;
@@ -194,14 +194,14 @@ final class IconSet implements IconProviderInterface
      * @param null|string                                                         $fallback
      * @param null|string                                                         $cacheKey   [AUTO]
      *
-     * @return null|IconView
+     * @return null|IconInterface
      */
     public function get(
         string           $icon,
         array|Attributes $attributes = [],
         ?string          $fallback = null,
         ?string          $cacheKey = AUTO,
-    ) : ?IconView {
+    ) : ?IconInterface {
         if ( \str_contains( $icon, '.' ) ) {
             [$icon, $tail] = \explode( '.', $icon, 2 );
         }
@@ -247,13 +247,13 @@ final class IconSet implements IconProviderInterface
      * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
      * @param null|string                                                         $fallback
      *
-     * @return IconView
+     * @return IconElement
      */
     private function getIconView(
         string           $icon,
         array|Attributes $attributes = [],
         ?string          $fallback = null,
-    ) : IconView {
+    ) : IconElement {
         $attributes = Attributes::from( $attributes );
 
         $vector = $this->getIconData( $icon, $fallback );
@@ -265,7 +265,7 @@ final class IconSet implements IconProviderInterface
 
         $svg = \trim( \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
 
-        return new IconView( $svg, $attributes );
+        return new IconElement( $svg, $attributes );
     }
 
     /**

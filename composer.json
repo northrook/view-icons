@@ -18,11 +18,11 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.3",
-    "northrook/view": "dev-main",
+    "northrook/core": "dev-main",
+    "northrook/view-element": "dev-main",
     "symfony/http-client": "@stable"
   },
   "require-dev": {
-    "northrook/dev-env": "dev-main",
-    "latte/latte": "^3.0"
+    "northrook/dev-env": "dev-main"
   }
 }

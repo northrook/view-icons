@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\View\Html\Attributes;
-use Core\View\Template\ViewElement;
+use Core\View\Element\Attributes;
 
 /**
  * @internal
  *
  * @author Martin Nielsen <mn@northrook.com>
  */
-final class IconView extends ViewElement
+final class IconElement extends ViewElement
 {
     public readonly bool $isValid;
 
