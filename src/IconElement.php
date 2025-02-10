@@ -11,7 +11,7 @@ use Core\View\Element\Attributes;
  *
  * @author Martin Nielsen <mn@northrook.com>
  */
-final class IconElement extends ViewElement
+final class IconElement extends Element
 {
     public readonly bool $isValid;
 
