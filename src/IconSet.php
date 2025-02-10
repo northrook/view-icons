@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Core\View;
 
-use Core\Interface\{IconInterface, IconProviderInterface};
 use Core\View\Element\Attributes;
+use Core\View\Interface\IconProviderInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use function String\cacheKey;
@@ -194,14 +194,14 @@ final class IconSet implements IconProviderInterface
      * @param null|string                                                         $fallback
      * @param null|string                                                         $cacheKey   [AUTO]
      *
-     * @return null|IconInterface
+     * @return ?Icon
      */
     public function get(
         string           $icon,
         array|Attributes $attributes = [],
         ?string          $fallback = null,
         ?string          $cacheKey = AUTO,
-    ) : ?IconInterface {
+    ) : ?Icon {
         if ( \str_contains( $icon, '.' ) ) {
             [$icon, $tail] = \explode( '.', $icon, 2 );
         }
@@ -247,13 +247,13 @@ final class IconSet implements IconProviderInterface
      * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
      * @param null|string                                                         $fallback
      *
-     * @return IconElement
+     * @return Icon
      */
     private function getIconView(
         string           $icon,
         array|Attributes $attributes = [],
         ?string          $fallback = null,
-    ) : IconElement {
+    ) : Icon {
         $attributes = Attributes::from( $attributes );
 
         $vector = $this->getIconData( $icon, $fallback );
@@ -265,7 +265,7 @@ final class IconSet implements IconProviderInterface
 
         $svg = \trim( \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
 
-        return new IconElement( $svg, $attributes );
+        return new Icon( $svg, $attributes );
     }
 
     /**
