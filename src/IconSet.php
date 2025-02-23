@@ -6,11 +6,11 @@ namespace Core\View;
 
 use Core\View\Element\Attributes;
 use Core\View\Interface\IconProviderInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
-use function String\cacheKey;
-use const Cache\AUTO;
 use Throwable;
+use function Support\cacheKey;
+use const Support\AUTO;
 
 final class IconSet implements IconProviderInterface
 {
@@ -164,8 +164,8 @@ final class IconSet implements IconProviderInterface
     private array $icons = [];
 
     public function __construct(
-        private readonly ?CacheInterface  $cache = null,
-        private readonly ?LoggerInterface $logger = null,
+        private readonly ?CacheItemPoolInterface $cache = null,
+        private readonly ?LoggerInterface        $logger = null,
     ) {
         $this->name = 'core';
     }

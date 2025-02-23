@@ -16,5 +16,9 @@ interface IconProviderInterface
      *
      * @return null|Icon
      */
-    public function get( string $icon, array|Attributes $attributes = [], ?string $fallback = null ) : ?Icon;
+    public function get(
+        string           $icon,
+        array|Attributes $attributes = [],
+        ?string          $fallback = null,
+    ) : ?Icon;
 }

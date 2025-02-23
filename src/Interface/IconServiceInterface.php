@@ -1,15 +1,13 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Core\View\Interface;
 
-use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 interface IconServiceInterface extends IconProviderInterface
 {
     /**
-     * @param CacheInterface $cache `readonly` render cache
+     * @param CacheItemPoolInterface $cache `readonly` render cache
      */
-    public function __construct( CacheInterface $cache );
+    public function __construct( CacheItemPoolInterface $cache );
 }
