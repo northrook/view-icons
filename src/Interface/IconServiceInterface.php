@@ -2,6 +2,7 @@
 
 namespace Core\View\Interface;
 
+use Core\Interface\IconProviderInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 interface IconServiceInterface extends IconProviderInterface

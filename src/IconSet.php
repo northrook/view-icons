@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Core\View;
 
+use Cache\CachePoolTrait;
 use Core\View\Element\Attributes;
-use Core\View\Interface\IconProviderInterface;
+use Core\Interface\IconProviderInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 use function Support\cacheKey;
-use const Support\AUTO;
+use UnitEnum;
 
 final class IconSet implements IconProviderInterface
 {
+    use CachePoolTrait;
+
+    /** @var array<string, array{'attributes': array<string,int|string>,'svg':string }> */
     private const array DEFAULT = [
         'chevron' => [
             'attributes' => [
@@ -75,7 +78,8 @@ final class IconSet implements IconProviderInterface
             'svg'        => '<path stroke-linecap="round" stroke-linejoin="round" d="M8 4v8m3.46-6-6.92 4m0-4 6.92 4"/>',
         ],
         'theme-mode-toggle' => [
-            'svg' => <<<'EOD'
+            'attributes' => [],
+            'svg'        => <<<'EOD'
                 <mask mask="svg-theme-moon-mask">
                   <rect x="0" y="0" width="100%" height="100%" fill="white"/>
                   <circle cx="16" cy="6" r="4" fill="currentColor"/>
@@ -152,21 +156,24 @@ final class IconSet implements IconProviderInterface
 
     ];
 
+    /** @var array<string, array{'attributes': array<string,int|string>,'svg':string }> */
+    private array $icons = [];
+
     public readonly string $name;
 
     public readonly int $count;
 
+    /** @var array<string, string> */
     private array $defaultAttributes = [
         'class'   => 'icon',
         'viewbox' => '0 0 16 16',
     ];
 
-    private array $icons = [];
-
     public function __construct(
-        private readonly ?CacheItemPoolInterface $cache = null,
-        private readonly ?LoggerInterface        $logger = null,
+        ?CacheItemPoolInterface             $cache = null,
+        protected readonly ?LoggerInterface $logger = null,
     ) {
+        $this->setCacheAdapter( $cache, 'core.icons' );
         $this->name = 'core';
     }
 
@@ -189,18 +196,16 @@ final class IconSet implements IconProviderInterface
     }
 
     /**
-     * @param string                                                              $icon
-     * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
-     * @param null|string                                                         $fallback
-     * @param null|string                                                         $cacheKey   [AUTO]
+     * @param string                                                         $icon
+     * @param null|string                                                    $fallback
+     * @param array<array-key, string>|bool|float|int|null[]|string|UnitEnum $attributes
      *
      * @return ?Icon
      */
     public function get(
-        string           $icon,
-        array|Attributes $attributes = [],
-        ?string          $fallback = null,
-        ?string          $cacheKey = AUTO,
+        string                                       $icon,
+        ?string                                      $fallback = null,
+        array|bool|string|int|float|UnitEnum|null ...$attributes,
     ) : ?Icon {
         if ( \str_contains( $icon, '.' ) ) {
             [$icon, $tail] = \explode( '.', $icon, 2 );
@@ -218,21 +223,20 @@ final class IconSet implements IconProviderInterface
             }
         }
 
-        try {
-            if ( $this->cache ) {
-                $iconView = $this->cache->get(
-                    cacheKey( $icon, $fallback, $attributes ),
-                    fn() => $this->getIconView( $icon, $attributes, $fallback ),
-                );
-            }
-            else {
-                $iconView = $this->getIconView( $icon, $attributes, $fallback );
-            }
-        }
-        catch ( Throwable $e ) {
-            $this->logger?->error( $e->getMessage() );
+        $iconView = $this->getCache(
+            cacheKey( $icon, $fallback, $attributes ),
+            fn() => $this->getIconView( $icon, $fallback, ...$attributes ),
+        );
+
+        if ( ! $iconView ) {
+            $this->logger?->error(
+                'Unable to provide icon {icon}, nor fallback {fallback}',
+                ['icon' => $icon, 'fallback' => $fallback],
+            );
             return null;
         }
+
+        \assert( $iconView instanceof Icon );
 
         // order of frequent use - up is default
         if ( \in_array( $tail, ['right', 'down', 'left', 'up'], true ) ) {
@@ -243,27 +247,29 @@ final class IconSet implements IconProviderInterface
     }
 
     /**
-     * @param string                                                              $icon
-     * @param array<string, null|array<array-key, string>|bool|string>|Attributes $attributes
-     * @param null|string                                                         $fallback
+     * @param string                                                        $icon
+     * @param null|string                                                   $fallback
+     * @param null|array<array-key, ?string>|bool|float|int|string|UnitEnum ...$attributes
      *
      * @return Icon
      */
     private function getIconView(
-        string           $icon,
-        array|Attributes $attributes = [],
-        ?string          $fallback = null,
+        string                                       $icon,
+        ?string                                      $fallback = null,
+        array|bool|string|int|float|UnitEnum|null ...$attributes,
     ) : Icon {
-        $attributes = Attributes::from( $attributes );
+        $attributes = Attributes::from( ...$attributes );
 
         $vector = $this->getIconData( $icon, $fallback );
 
+        \assert( \is_array( $vector['attributes'] ) && \is_string( $vector['svg'] ) );
+
         $attributes
             ->add( $this->defaultAttributes )
-            ->add( $vector['attributes'] ?? [] )
+            ->add( $vector['attributes'] )
             ->class->add( $icon, true );
 
-        $svg = \trim( \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
+        $svg = \trim( (string) \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
 
         return new Icon( $svg, $attributes );
     }
@@ -272,10 +278,12 @@ final class IconSet implements IconProviderInterface
      * @param string      $icon
      * @param null|string $fallback
      *
-     * @return array{attributes: array<string, mixed>, svg: string}
+     * @return array{attributes: array<string, int|string>, svg: string}
      */
     private function getIconData( string $icon, ?string $fallback ) : array
     {
-        return $this->icons[$icon] ?? $this->icons[$fallback] ?? $this::DEFAULT[$icon];
+        return $this->icons[$icon]
+                  ?? $this->icons[$fallback]
+                  ?? $this::DEFAULT[$icon];
     }
 }
