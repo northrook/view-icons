@@ -173,7 +173,7 @@ final class IconSet implements IconProviderInterface
         ?CacheItemPoolInterface             $cache = null,
         protected readonly ?LoggerInterface $logger = null,
     ) {
-        $this->setCacheAdapter( $cache, 'core.icons' );
+        $this->assignCacheAdapter( $cache, 'core.icons' );
         $this->name = 'core';
     }
 
