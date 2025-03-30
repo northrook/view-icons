@@ -9,7 +9,7 @@ use Core\View\Element\Attributes;
 use Core\Interface\IconProviderInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use function Support\cacheKey;
+use function Support\key_hash;
 use UnitEnum;
 
 final class IconSet implements IconProviderInterface
@@ -224,7 +224,7 @@ final class IconSet implements IconProviderInterface
         }
 
         $iconView = $this->getCache(
-            cacheKey( $icon, $fallback, $attributes ),
+            key_hash( 'xxh32', $icon, $fallback, $attributes ),
             fn() => $this->getIconView( $icon, $fallback, ...$attributes ),
         );
 
