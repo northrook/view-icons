@@ -258,15 +258,15 @@ final class IconSet implements IconProviderInterface
         ?string                                      $fallback = null,
         array|bool|string|int|float|UnitEnum|null ...$attributes,
     ) : Icon {
-        $attributes = Attributes::from( ...$attributes );
+        $attributes = new Attributes( ...$attributes );
 
         $vector = $this->getIconData( $icon, $fallback );
 
         \assert( \is_array( $vector['attributes'] ) && \is_string( $vector['svg'] ) );
 
         $attributes
-            ->add( $this->defaultAttributes )
-            ->add( $vector['attributes'] )
+            ->add( ...$this->defaultAttributes )
+            ->add( ...$vector['attributes'] )
             ->class->add( $icon, true );
 
         $svg = \trim( (string) \preg_replace( ['#\s+#m', '#>\s<#'], [' ', '><'], $vector['svg'] ) );
